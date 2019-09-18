@@ -1,0 +1,43 @@
+﻿@page "/blogs"
+@inject BloggingContext dbContext
+
+<h1>Blogs</h1>
+
+@if (blogs == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Rating</th>
+                <th>Url</th>
+                <th>View</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var blog in blogs)
+            {
+                <tr>
+                    <td>@blog.BlogId</td>
+                    <td>@blog.Rating</td>
+                    <td>@blog.Url</td>
+                    <td><a href="/posts/@blog.BlogId">View Posts</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    Blog[] blogs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        blogs = await dbContext.Blogs.ToArrayAsync();
+    }
+}

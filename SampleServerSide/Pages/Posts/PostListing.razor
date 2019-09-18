@@ -1,0 +1,84 @@
+﻿@page "/posts"
+@page "/posts/{BlogId:int}"
+@inject BloggingContext dbContext
+
+<h1>Posts</h1>
+
+<div class="row">
+    <div class="col">
+        <label>Filter</label>
+        <input type="date" @bind="startDate" />
+        <input type="date" @bind="endDate" />
+        <span>@((endDate - startDate).Days) Days</span>
+        <button @onclick="LoadPosts">Apply</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <a href="/post/create">Add Record</a>
+    </div>
+</div>
+
+@if (posts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Date Posted</th>
+                <th>Modify</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var post in posts)
+            {
+                <tr>
+                    <td>@post.PostId</td>
+                    <td>
+                        <a href="/post/@post.PostId">@post.Title</a>
+                    </td>
+                    <td>@post.Content.Truncate(30) ...</td>
+                    <td>@post.DatePosted.ToShortDateString()</td>
+                    <td>
+                        <a href="/post/update/@post.PostId">edit</a> | 
+                        <a href="/post/delete/@post.PostId">delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    [Parameter] public int BlogId { get; set; }
+    DateTime startDate = DateTime.Now.AddDays(-60);
+    DateTime endDate = DateTime.Now;
+
+    Post[] posts;
+
+    async Task LoadPosts()
+    {
+        // Filter by Blog
+        IQueryable<Post> query = BlogId == 0 ?
+             dbContext.Posts :
+             dbContext.Posts.Where(p => p.BlogId == BlogId);
+
+        // Filter by Date
+        query = query.Where(p => p.DatePosted >= startDate)
+                     .Where(p => p.DatePosted <= endDate);
+
+        posts = await query.ToArrayAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadPosts();
+    }
+}

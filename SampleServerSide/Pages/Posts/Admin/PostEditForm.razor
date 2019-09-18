@@ -1,0 +1,24 @@
+﻿<div class="form-group">
+    <label>Title</label>
+    <InputText class="form-control" @bind-Value="Model.Title" />
+</div>
+<div class="form-group">
+    <label>Content</label>
+    <InputTextArea class="form-control" @bind-Value="Model.Content" />
+</div>
+<div class="form-group">
+    <label>Blog</label>
+    <InputSelect class="form-control" @bind-Value="Model.SelectedBlogId">
+        @if (Model.BlogList != null)
+        {
+            <option value="">--Select</option>
+            foreach (var b in Model.BlogList)
+            {
+                <option value="@b.BlogId">@b.Url</option>
+            }
+        }
+    </InputSelect>
+</div>
+@code {
+    [Parameter] public Post Model { get; set; }
+}

@@ -1,0 +1,42 @@
+﻿@page "/post/update/{PostId:int}"
+@* Ex: Route matches /post/update/5 *@
+@inject BloggingContext dbContext
+
+<h3>Update Post</h3>
+
+@if (saved > 0)
+{
+    <div class="alert alert-success" role="alert">
+        Your post was updated saved.
+    </div>
+}
+
+<EditForm Model="editPost" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <PostEditForm Model="editPost"></PostEditForm>
+    <button class="btn btn-outline-primary" type="submit">Submit</button>
+</EditForm>
+
+@code {
+
+    [Parameter] public int PostId { get; set; }
+
+    [Parameter] public DeleteConfirmationModel DeleteConfirmation { get; set; }
+
+    Post editPost;
+
+    int saved = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editPost = await dbContext.Posts.FirstAsync(p => p.PostId == PostId);
+        editPost.BlogList = await dbContext.Blogs.ToArrayAsync();
+    }
+
+    async Task HandleValidSubmit()
+    {
+        saved = await dbContext.SaveChangesAsync();
+    }
+
+}

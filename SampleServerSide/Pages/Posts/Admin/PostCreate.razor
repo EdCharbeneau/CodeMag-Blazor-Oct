@@ -1,0 +1,38 @@
+﻿@page "/post/create"
+@inject BloggingContext dbContext
+
+<h3>Create Post</h3>
+
+@if (saved > 0)
+{
+    <div class="alert alert-success" role="alert">
+        Your post was successfully saved.
+    </div>
+}
+
+<EditForm Model="newPost" 
+          OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <PostEditForm Model="newPost"></PostEditForm>
+    <button class="btn btn-outline-primary" type="submit">Submit</button>
+</EditForm>
+
+
+@code {
+
+    Post newPost = new Post();
+
+    int saved = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        newPost.BlogList = await dbContext.Blogs.ToArrayAsync();
+    }
+
+    async Task HandleValidSubmit()
+    {
+        dbContext.Posts.Add(newPost);
+        saved = await dbContext.SaveChangesAsync();
+    }
+}

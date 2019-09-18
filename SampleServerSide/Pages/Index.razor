@@ -1,0 +1,32 @@
+﻿@page "/"
+
+<h1>Hello, world!</h1>
+
+Welcome to Blazor!
+<div class="row">
+    <div class="col">
+        <h2>Binding to decimal</h2>
+
+        <input type="number" @bind=x />
+        <input type="number" @bind=y />
+        <p>Result = @Result.ToString("G17")</p>
+    </div>
+    <div class="col">
+        <h2>Binding to dates</h2>
+
+        <input type="date" @bind="startDate" />
+        <input type="date" @bind="endDate" />
+        <p>@((endDate - startDate).Days) Days</p>
+    </div>
+</div>
+
+@code {
+    decimal x = 0.1M;
+    decimal y = 0.2M;
+    decimal Result => x + y;
+
+    DateTime startDate = DateTime.Now.AddDays(-30);
+    DateTime endDate = DateTime.Now;
+}
+
+

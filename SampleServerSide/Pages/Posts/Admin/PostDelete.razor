@@ -1,0 +1,55 @@
+﻿@page "/post/delete/{PostId:int}"
+@inject BloggingContext dbContext
+
+<h3>Delete Post</h3>
+
+@if (deleted > 0)
+{
+    <div class="alert alert-warning" role="alert">
+        Your post was deleted.
+    </div>
+}
+
+<EditForm Model="DeleteConfirmation" OnValidSubmit="HandleValidDelete">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>
+            Type the Post Title <span class="alert-danger">@DeleteConfirmation.CompareValue</span> and click to delete this item.
+        </label>
+        <InputText class="form-control" @bind-Value="DeleteConfirmation.CompareInput" />
+    </div>
+    <button class="btn btn-danger" type="submit">Delete</button>
+</EditForm>
+
+
+@code {
+
+    [Parameter] public int PostId { get; set; }
+
+    [Parameter] public DeleteConfirmationModel DeleteConfirmation { get; set; }
+
+    int deleted = 0;
+    Post post;
+
+    protected override async Task OnInitializedAsync()
+    {
+        post = await dbContext.Posts.FirstAsync(p => p.PostId == PostId);
+        DeleteConfirmation = new DeleteConfirmationModel
+        {
+            CompareValue = post.Title
+        };
+    }
+
+    async Task HandleValidDelete()
+    {
+        // Compare validator doesn't block submission
+        // Validate again
+        if (DeleteConfirmation.CompareValue == DeleteConfirmation.CompareInput)
+        {
+            dbContext.Posts.Remove(post);
+            deleted = await dbContext.SaveChangesAsync();
+        }
+
+    }
+}

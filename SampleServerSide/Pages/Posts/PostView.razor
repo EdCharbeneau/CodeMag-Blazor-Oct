@@ -1,0 +1,24 @@
+﻿@page "/post/{PostId:int}"
+@inject BloggingContext dbContext
+
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col-8">
+        <h3>@post.Title (@post.PostId)</h3>
+
+        <p>@post.Content</p>
+    </div>
+    <div class="col-2"></div>
+</div>
+
+
+
+@code {
+    [Parameter] public int PostId { get; set; }
+    Post post;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        post = await dbContext.Posts.FirstAsync(p => p.PostId == PostId);
+    }
+}

@@ -338,4 +338,9 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# Dependencies that will restore on build
 /SampleServerSide/blogging.db
+/SampleServerSide/Themes/Bootstrap/scss
+/SampleServerSide/wwwroot/css/bootstrap
+/SampleServerSide/wwwroot/css/open-iconic
